@@ -1,9 +1,9 @@
-import 'package:breaking_bad/character_tile.dart';
-import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'character_tile.dart';
 import 'models.dart';
+import 'character_tile.dart';
+import 'quotes_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,9 +14,9 @@ class HomeScreen extends StatelessWidget {
 
   Future<List<Character>> fetchBbCharacters() async {
     try {
-      // Send get request to url (convert string to uri type)
-      var response =
-          await http.get(Uri.https('breakingbadapi.com', '/api/characters'));
+      // Send get request to url (parse string as uri type)
+      var response = await http
+          .get(Uri.parse('https://breakingbadapi.com/api/characters'));
       // Decode response body to json
       var characters = json.decode(response.body);
       List<Character> charList = [];
@@ -66,10 +66,22 @@ class HomeScreen extends StatelessWidget {
                         itemCount: snapshot.data.length,
                         // Loop through each item in snapshot.data
                         itemBuilder: (BuildContext context, int index) {
-                          return Card(
-                            child:
-                                CharacterTile(character: snapshot.data[index]),
-                          );
+                          return GestureDetector(
+                              // On tap, navigate to quotes screen, passing character name
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => QuotesScreen(
+                                            character:
+                                                snapshot.data[index].name)));
+                              },
+                              // Character tile widget wrapped in GestureDetector for click event
+                              // This is display, passing character index to character tile
+                              child: Card(
+                                child: CharacterTile(
+                                    character: snapshot.data[index]),
+                              ));
                         });
                   }
                 })));
